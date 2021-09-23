@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+enum Tabs {
+  Album,
+  Song,
+  Artist,
+}
+
 class HomeScreenProvider extends ChangeNotifier {
   TextEditingController controller = TextEditingController();
   FocusNode focusNode = FocusNode();
