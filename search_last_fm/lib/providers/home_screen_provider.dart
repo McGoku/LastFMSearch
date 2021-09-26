@@ -1,48 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:search_last_fm/services/search_service.dart';
 
 enum Tabs {
-  Album,
-  Song,
-  Artist,
+  album,
+  song,
+  artist,
 }
 
 class HomeScreenProvider extends ChangeNotifier {
-  TextEditingController controller = TextEditingController();
-  FocusNode focusNode = FocusNode();
+  HomeScreenProvider();
 
-  final String rootURL = "http://ws.audioscrobbler.com/2.0/";
-  // final String sharedSecret = "03e2c54367083871f924051dfa67f3b2";
-  final String apiKey = "9a03fa28b4268fc39e837e431fa0c1fc";
-
-  HomeScreenProvider() {
-    init();
+  void submit(String text) async {
+    SearchService.instance.searchText = text;
   }
 
-  void init() {}
-
-  Future<void> test() async {
-    final queryParameters = {
-      'method': 'album.search',
-      'album': 'believe',
-      'api_key': apiKey,
-      'format': 'json',
-    };
-    Uri url = Uri.https("ws.audioscrobbler.com", "2.0/", queryParameters);
-
-    print(url);
-    var res = await http.get(url);
-
-    print(res.statusCode);
-    print(res.body);
-  }
-
-  void rebuild() {
+  //TODO: preimenuj ovo
+  void changeText(String text) {
     notifyListeners();
   }
 
-  void clearText() {
+  void clearText(TextEditingController controller) {
     controller.clear();
+    SearchService.instance.searchText = controller.text;
     notifyListeners();
   }
 }
