@@ -18,11 +18,13 @@ class SongModel extends BaseModel {
     this._mbid = json["mbid"] ?? "";
   }
 
-  SongModel.fromInfoJson(Map<String, dynamic> json) : super.fromJson(json) {
+  SongModel.fromInfoJson(Map<String, dynamic> json, SongModel oldModel) : super.fromJson(json) {
     this._name = json["name"] ?? "";
     this._mbid = json["mbid"] ?? "";
     if (json["album"] != null && json["album"]["image"] != null && json["album"]["image"].length > 0) {
       this._image = json["album"]["image"].last["#text"];
+    } else {
+      this._image = oldModel.imageURL;
     }
 
     if (json["wiki"] != null) {

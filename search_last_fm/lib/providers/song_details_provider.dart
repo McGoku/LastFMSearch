@@ -28,6 +28,6 @@ class SongDetailsProvider extends DetailsProvider {
 
   @override
   BaseModel parseResults(Map<String, dynamic> json) {
-    return SongModel.fromInfoJson(json["track"]);
+    return SongModel.fromInfoJson(json["track"], model);
   }
 }

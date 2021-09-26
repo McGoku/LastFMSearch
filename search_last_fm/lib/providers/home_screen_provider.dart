@@ -10,17 +10,28 @@ enum Tabs {
 class HomeScreenProvider extends ChangeNotifier {
   HomeScreenProvider();
 
+  bool shouldShowX = false;
   void submit(String text) async {
     SearchService.instance.searchText = text;
   }
 
-  //TODO: preimenuj ovo
   void changeText(String text) {
-    notifyListeners();
+    if (shouldShowX) {
+      if (text.length == 0) {
+        shouldShowX = false;
+        notifyListeners();
+      }
+    } else {
+      if (text.length > 0) {
+        shouldShowX = true;
+        notifyListeners();
+      }
+    }
   }
 
   void clearText(TextEditingController controller) {
     controller.clear();
+    shouldShowX = false;
     SearchService.instance.searchText = controller.text;
     notifyListeners();
   }

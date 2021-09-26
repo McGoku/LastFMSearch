@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:search_last_fm/model/album_model.dart';
 import 'package:search_last_fm/model/base_model.dart';
@@ -19,6 +20,22 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<DetailsProvider>(
       create: (_) {
@@ -32,6 +49,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       },
       builder: (context, child) {
         return Scaffold(
+          backgroundColor: Color(0xFF2B2B2B),
           body: Consumer<DetailsProvider>(
             builder: (context, provider, child) {
               return Stack(
@@ -67,8 +85,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: ListView(
                         children: [
-                          Text(provider.model.title),
-                          Text(provider.model.subtitle),
+                          Text(
+                            provider.model.title,
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                          Text(
+                            provider.model.subtitle,
+                            style: TextStyle(color: Colors.white, fontSize: 22),
+                          ),
+                          const SizedBox(height: 16),
                           ...details(provider),
                         ],
                       ),
@@ -102,15 +127,34 @@ class _DetailsScreenState extends State<DetailsScreen> {
     List<Widget> results;
     switch (provider.state) {
       case DetailsState.loading:
-        results = [Text("loading...")];
+        results = [
+          Center(
+            child: Container(
+              width: 50,
+              height: 50,
+              child: CircularProgressIndicator(),
+            ),
+          )
+        ];
         break;
       case DetailsState.error:
-        results = [Text("there was an error getting more details")];
+        results = [
+          Text(
+            "there was an error getting more details",
+            style: TextStyle(color: Colors.red, fontSize: 18),
+          )
+        ];
         break;
       case DetailsState.result:
         results = [
-          Text(provider.model.published),
-          Text(provider.model.summary),
+          Text(
+            provider.model.published,
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          Text(
+            provider.model.summary,
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
         ];
         break;
       case DetailsState.disposed:

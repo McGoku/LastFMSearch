@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:search_last_fm/providers/home_screen_provider.dart';
 import 'package:search_last_fm/services/search_service.dart';
@@ -18,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _tabController = TabController(vsync: this, length: 3);
     _tabController.addListener(listenTab);
     SearchService.instance.activeTab = Tabs.album;
@@ -27,6 +29,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     _tabController.removeListener(listenTab);
     _tabController.dispose();
     super.dispose();
@@ -42,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       create: (_) => HomeScreenProvider(),
       builder: (context, child) {
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             backgroundColor: Colors.red,
             title: Text("Search LastFM"),
@@ -67,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               color: Colors.red,
                             ),
                           ),
-                          suffix: (_textEditingController.text.isNotEmpty)
+                          suffix: (provider.shouldShowX)
                               ? InkWell(
                                   onTap: () {
                                     provider.clearText(_textEditingController);

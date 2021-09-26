@@ -13,6 +13,8 @@ class ArtistResultsProvider extends ResultsProvider {
       'artist': textParam,
       'api_key': ConnectionService.instance.apiKey,
       'format': 'json',
+      'page': '$nextPage',
+      'limit': '$limit',
     };
   }
 
@@ -23,6 +25,7 @@ class ArtistResultsProvider extends ResultsProvider {
         json["results"]["artistmatches"] != null &&
         json["results"]["artistmatches"]["artist"] != null &&
         json["results"]["artistmatches"]["artist"].length > 0) {
+      totalResults = int.tryParse(json["results"]["opensearch:totalResults"]);
       for (var a in json["results"]["artistmatches"]["artist"]) {
         result.add(ArtistModel.fromJson(a));
       }

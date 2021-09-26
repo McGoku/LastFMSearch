@@ -13,6 +13,8 @@ class SongResultsProvider extends ResultsProvider {
       'track': textParam,
       'api_key': ConnectionService.instance.apiKey,
       'format': 'json',
+      'page': '$nextPage',
+      'limit': '$limit',
     };
   }
 
@@ -23,6 +25,7 @@ class SongResultsProvider extends ResultsProvider {
         json["results"]["trackmatches"] != null &&
         json["results"]["trackmatches"]["track"] != null &&
         json["results"]["trackmatches"]["track"].length > 0) {
+      totalResults = int.tryParse(json["results"]["opensearch:totalResults"]);
       for (var a in json["results"]["trackmatches"]["track"]) {
         result.add(SongModel.fromJson(a));
       }

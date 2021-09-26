@@ -13,6 +13,8 @@ class AlbumResultsProvider extends ResultsProvider {
       'album': textParam,
       'api_key': ConnectionService.instance.apiKey,
       'format': 'json',
+      'page': '$nextPage',
+      'limit': '$limit',
     };
   }
 
@@ -23,6 +25,7 @@ class AlbumResultsProvider extends ResultsProvider {
         json["results"]["albummatches"] != null &&
         json["results"]["albummatches"]["album"] != null &&
         json["results"]["albummatches"]["album"].length > 0) {
+      totalResults = int.tryParse(json["results"]["opensearch:totalResults"]);
       for (var a in json["results"]["albummatches"]["album"]) {
         result.add(AlbumModel.fromJson(a));
       }

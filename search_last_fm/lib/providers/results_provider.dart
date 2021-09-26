@@ -25,6 +25,11 @@ abstract class ResultsProvider extends ChangeNotifier {
     }
   }
 
+  int limit = 20;
+  int totalResults;
+  int get nextPage => (results != null) ? (results.length / limit).ceil() + 1 : 1;
+  bool get isAllLoaded => totalResults != null ? results.length >= totalResults : false;
+
   List<BaseModel> results;
 
   ResultsProvider() {
@@ -41,30 +46,39 @@ abstract class ResultsProvider extends ChangeNotifier {
   Map<String, dynamic> getQueryParameters(String textParam);
   List<BaseModel> parseResults(Map<String, dynamic> json);
 
-  void listenService() async {
+  Future<bool> loadMore() async {
+    String textParam = SearchService.instance.searchText;
+    await fetchSafe(textParam);
+    return true;
+  }
+
+  Future<void> fetchSafe(String textParam) async {
+    Uri url = Uri.https(ConnectionService.instance.authority, ConnectionService.instance.path, getQueryParameters(textParam));
+    try {
+      var res = await http.get(url);
+      if (SearchService.instance.searchText != textParam) return;
+      if (res.statusCode == 200) {
+        results.addAll(parseResults(jsonDecode(res.body)));
+        if (results.length > 0) {
+          state = ResultsState.results;
+        } else {
+          state = ResultsState.noResults;
+        }
+      } else {
+        state = ResultsState.error;
+      }
+    } catch (e) {
+      print("there was ana error while fetching data $e");
+      state = ResultsState.error;
+    }
+  }
+
+  void listenService() {
     String textParam = SearchService.instance.searchText;
     if (textParam.isNotEmpty) {
       state = ResultsState.loading;
-
-      Uri url = Uri.https(ConnectionService.instance.authority, ConnectionService.instance.path, getQueryParameters(textParam));
-
-      try {
-        var res = await http.get(url);
-        if (SearchService.instance.searchText != textParam) return;
-        if (res.statusCode == 200) {
-          results = parseResults(jsonDecode(res.body));
-          if (results.length > 0) {
-            state = ResultsState.results;
-          } else {
-            state = ResultsState.noResults;
-          }
-        } else {
-          state = ResultsState.error;
-        }
-      } catch (e) {
-        print("there was ana error while fetching data $e");
-        state = ResultsState.error;
-      }
+      results = [];
+      fetchSafe(textParam);
     } else {
       state = ResultsState.idle;
     }

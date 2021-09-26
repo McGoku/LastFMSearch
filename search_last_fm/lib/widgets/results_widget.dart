@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loadmore/loadmore.dart';
 import 'package:provider/provider.dart';
 import 'package:search_last_fm/providers/album_results_provider.dart';
 import 'package:search_last_fm/providers/artist_results_provider.dart';
@@ -40,7 +41,11 @@ class _ResultsWidgetState extends State<ResultsWidget> {
             switch (provider.state) {
               case ResultsState.idle:
                 return Center(
-                  child: Text(provider.state.toString()),
+                  child: Text(
+                    "To search type in search field",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    maxLines: 2,
+                  ),
                 );
                 break;
               case ResultsState.loading:
@@ -50,21 +55,35 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                 break;
               case ResultsState.results:
                 return Center(
-                  child: ListView(
-                    children: [
-                      for (var a in provider.results) CellWidget(model: a),
-                    ],
+                  child: LoadMore(
+                    isFinish: provider.isAllLoaded,
+                    onLoadMore: provider.loadMore,
+                    child: ListView.builder(
+                      itemCount: provider.results.length,
+                      itemBuilder: (context, index) {
+                        return CellWidget(model: provider.results[index]);
+                      },
+                    ),
+                    textBuilder: DefaultLoadMoreTextBuilder.english,
                   ),
                 );
                 break;
               case ResultsState.noResults:
                 return Center(
-                  child: Text(provider.state.toString()),
+                  child: Text(
+                    "No results for search term",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    maxLines: 2,
+                  ),
                 );
                 break;
               case ResultsState.error:
                 return Center(
-                  child: Text(provider.state.toString()),
+                  child: Text(
+                    "There was an error while trying to contact database",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    maxLines: 2,
+                  ),
                 );
                 break;
               default:
